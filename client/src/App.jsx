@@ -8,7 +8,7 @@ import About from "./pages/About";
 import Profile from "./pages/Profile";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -21,5 +21,3 @@ function App() {
     </BrowserRouter>
   );
 }
-
-export default App;
