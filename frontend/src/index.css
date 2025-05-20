@@ -1,13 +1,12 @@
 @import "tailwindcss";
+@import "flowbite/src/themes/default";
+/* @plugin "flowbite/plugin"; */
+
 html,
 body,
 #root {
+  height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100%;
-}
-body {
-  font-family: "Inter", sans-serif;
-  background-color: #f3f4f6;
 }
