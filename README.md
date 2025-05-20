@@ -8,3 +8,6 @@
 -created userModel
 -created userRoute
 -created userController
+-created Signup api route
+-added user to database and hashed the password
+-
