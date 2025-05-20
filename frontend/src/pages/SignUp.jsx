@@ -131,6 +131,7 @@ function SignUp() {
             </form>
           </div>
           <p className="text-red-600 pl-8 mt-0 pb-8 font-light ">
+            
             {error && "Something Went Wrong"}
           </p>
         </div>
