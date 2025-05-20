@@ -3,3 +3,8 @@
 -made the folder "pages" and made file ""
 -installed react-router-dom
 -imported {BrowserRouter, Routes, Route} in APP.jsx
+-made header for the app
+-created server and added mongoDB database
+-created userModel
+-created userRoute
+-created userController
