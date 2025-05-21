@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
   const message = err.message || "Internal Server Error";
   return res.status(statusCode).json({
     status: "error",
-    success: "false",
+    success: false,
     message: message,
     statusCode: statusCode,
   });

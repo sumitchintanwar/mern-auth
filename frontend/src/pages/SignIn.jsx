@@ -1,11 +1,25 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // or 'next/link' if using Next.js
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signinStart,
+  signOut,
+  signinSuccess,
+  signinFailure,
+} from "../redux/user/userSlice";
 function SignIn() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(false);
+  // const [loading, setLoading] = useState(false);   not needed as redux is used
+
+  const { error, loading } = useSelector((state) => state.userReducer);
+
+  console.log("Redux error:", error);
+  console.log("Redux loading:", loading);
+
+  // const { error, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -14,8 +28,9 @@ function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      setError(false);
+      // setLoading(true);
+      // setError(false);
+      dispatch(signinStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -24,15 +39,29 @@ function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      setLoading(false);
-      if (data.success === false) {
-        setError(true);
+      // console.log("API response:", data);
+      console.log(error);
+
+      // console.log("API response:", data);
+      // setLoading(false);
+      if (data.success === "false" || data.success === false) {
+        dispatch(signinFailure(data));
+        // setError(true);
+        // console.log("Network or server error:", error);
         return;
       }
-      navigate("/");
+      if (data.success === true) {
+        // setError(false);
+        navigate("/");
+      }
+      dispatch(signinSuccess(data.user));
+
+      // if (data.success === true) {
+      // }
     } catch (error) {
-      setLoading(false);
-      setError(error);
+      dispatch(signinFailure());
+      // setLoading(false);
+      // setError(error);
       console.log(error);
     }
 
@@ -142,6 +171,9 @@ function SignIn() {
                 </Link>
               </p>
             </form>
+            <p className="text-red-600 bg-bl pl-8 mt-0 pb-8 font-light ">
+              {(error && error.message) || ""}
+            </p>
           </div>
         </div>
       </div>

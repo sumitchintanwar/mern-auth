@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import {
+  signinFailure,
+  signinStart,
+  signinSuccess,
+  signOut,
+} from "../redux/user/userSlice";
+import { useDispatch } from "react-redux";
 function SignUp() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -14,8 +21,10 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      setError(false);
+      // setLoading(true);
+      // setError(false);
+
+      dispatch(signinStart());
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -25,11 +34,13 @@ function SignUp() {
       });
       const data = await res.json();
       setLoading(false);
-      if (data.success === false) {
+      if (data.success === true) {
+        setError(false);
+        navigate("/sign-in");
+      } else {
         setError(true);
         return;
       }
-      navigate("/sign-in");
     } catch (error) {
       setLoading(false);
       setError(error);
@@ -132,7 +143,7 @@ function SignUp() {
             </form>
           </div>
           <p className="text-red-600 pl-8 mt-0 pb-8 font-light ">
-            {error && "Something Went Wrong"}
+            {error && <span>Something went wrong</span>}
           </p>
         </div>
       </div>

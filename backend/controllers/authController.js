@@ -11,6 +11,10 @@ export const signupController = async (req, res, next) => {
     password: hashedPassword,
   });
   try {
+    const existingUser = await User.find({ email });
+    if (existingUser.length > 0) {
+      return next(errorHandler(409, "User already exists"));
+    }
     await newUser.save();
     res.status(201).json({ message: "User Created Successfully" });
   } catch (err) {
@@ -39,10 +43,13 @@ export const signinController = async (req, res, next) => {
     res
       .cookie("access_token", token, {
         httpOnly: true,
-        age: 24 * 60 * 60 * 1000, // 1 day
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
       .status(200)
-      .json(userWithoutPassword);
+      .json({
+        success: true,
+        user: userWithoutPassword,
+      });
   } catch (err) {
     next(err);
   }
