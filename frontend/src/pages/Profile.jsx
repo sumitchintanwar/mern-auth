@@ -1,17 +1,76 @@
-import React from "react";
+import React, { use, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+// import { useRef } from "react";
+// import { app } from "../firebase";
+// import {
+//   getDownloadURL,
+//   getStorage,
+//   ref,
+//   uploadBytesResumable,
+// } from "firebase/storage";
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
+  // const [image, setImage] = useState(undefined);
+  // const [percent, setPercent] = useState(0);
+  // const [imageError, setImageError] = useState(false);
+  // const [formData, setFormData] = useState({});
+  // const fileRef = useRef(null);
+
+  // // console.log("Current User:", currentUser);
+  // // console.log("Photo URL:", currentUser.user.photo);
+  // const handleUpload = async (file) => {
+  //   const storage = getStorage(app);
+  //   const fileName = new Date().getTime() + file.name;
+  //   const storageRef = ref(storage, fileName);
+  //   const uploadTask = uploadBytesResumable(storageRef, file);
+  //   uploadTask.on(
+  //     "state_changed",
+  //     (snapshot) => {
+  //       const progress =
+  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  //       setPercent(Math.round(progress));
+  //       console.log("Upload is" + progress + "% done");
+  //     },
+  //     (e) => {
+  //       setImageError(true);
+  //     },
+  //     () => {
+  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+  //         setFormData({ ...formData, photo: downloadURL });
+  //       });
+  //     }
+  //   );
+  // };
+  // useEffect(() => {
+  //   if (image) {
+  //     handleUpload(image);
+  //   }
+  // }, [image]);
   return (
     <div className="mt-0  flex flex-col items-center justify-center min-h-screen">
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
           <h1 className="text-3xl font-bold text-center mt-4 my-7">
             <form className="flex flex-col" action="">
+              {/* <input
+                type="file"
+                ref={fileRef}
+                hidden
+                accept="image/.*"
+                onChange={(e) => {
+                  e.target.files[0];
+                }}
+              /> */}
               <img
-                src=""
-                alt=""
-                className="h-24 w-24 self-center cursor-pointer rounded-full object-cover"
+                src={
+                  currentUser.user.photo ||
+                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                }
+                alt="Profile"
+                referrerPolicy="no-referrer"
+                // src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                onClick={() => fileRef.current.click()}
+                className="h-24 w-24 self-center cursor-pointer rounded-full object-cover bg-amber-50"
               />
 
               <div>
@@ -25,7 +84,7 @@ export default function Profile() {
                   type="text"
                   name="username"
                   id="username"
-                  defaultValue={currentUser?.username}
+                  defaultValue={currentUser.user.username}
                   // onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Username"
@@ -41,7 +100,7 @@ export default function Profile() {
                 </label>
                 <input
                   // defaultValue={currentUser?.email}
-                  defaultValue={currentUser?.email}
+                  defaultValue={currentUser.user.email}
                   type="email"
                   name="email"
                   id="email"

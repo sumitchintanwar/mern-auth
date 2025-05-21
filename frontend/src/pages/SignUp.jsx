@@ -24,8 +24,9 @@ function SignUp() {
     try {
       // setLoading(true);
       // setError(false);
-
       dispatch(signinStart());
+
+      // dispatch(signinStart());
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -34,17 +35,31 @@ function SignUp() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      setLoading(false);
-      if (data.success === true) {
-        setError(false);
-        navigate("/sign-in");
-      } else {
-        setError(true);
+      // setLoading(false);
+      // console.log(data);
+      // if (data.success === true) {
+      //   setError(false);
+      //   navigate("/sign-in");
+      // } else {
+      //   setError(true);
+      //   return;
+      // }
+      if (data.success === "false" || data.success === false) {
+        dispatch(signinFailure(data));
+        // setError(true);
+        // console.log("Network or server error:", error);
         return;
       }
+      if (data.success === true) {
+        // setError(false);
+        navigate("/");
+      }
+      dispatch(signinSuccess(data.user));
     } catch (error) {
-      setLoading(false);
-      setError(error);
+      // setLoading(false);
+      dispatch(signinFailure());
+      console.log(error);
+      // setError(error);
     }
 
     // console.log(data);
@@ -146,7 +161,7 @@ function SignUp() {
             </form>
           </div>
           <p className="text-red-600 pl-8 mt-0 pb-8 font-light ">
-            {error && <span>Something went wrong</span>}
+            {error && <span>{error.message}</span>}
           </p>
         </div>
       </div>

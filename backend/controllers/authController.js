@@ -16,7 +16,10 @@ export const signupController = async (req, res, next) => {
       return next(errorHandler(409, "User already exists"));
     }
     await newUser.save();
-    res.status(201).json({ message: "User Created Successfully" });
+    res.status(201).json({
+      success: true,
+      message: "User Created Successfully",
+    });
   } catch (err) {
     next(err);
   }
@@ -90,6 +93,7 @@ export const googleController = async (req, res, next) => {
     } else {
       // const generatedPassword = Math.random().toString(36).slice(-8);
       // const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      console.log("Received photo URL from frontend:", req.body.photo);
 
       const newUser = new User({
         username:
