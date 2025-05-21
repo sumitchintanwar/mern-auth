@@ -4,17 +4,17 @@ import userReducer from "./user/userSlice.js";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { persistStore } from "redux-persist";
-const rootReducer = combineReducers({ userReducer });
+const rootReducer = combineReducers({ user: userReducer });
 const persistConfig = {
   key: "root",
   value: rootReducer,
   storage,
-  whitelist: ["userReducer"],
+  whitelist: ["user"],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: 
+  reducer:
     // user: userReducer,
     // userReducer,
     persistedReducer, //with local storage

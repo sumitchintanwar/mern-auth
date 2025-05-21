@@ -13,7 +13,7 @@ function SignIn() {
   // const [error, setError] = useState(false);
   // const [loading, setLoading] = useState(false);   not needed as redux is used
 
-  const { loading, error } = useSelector((state) => state.userReducer);
+  const { loading, error } = useSelector((state) => state.user);
 
   // console.log("Redux error:", error);
   // console.log("Redux loading:", loading);

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const { currentUser } = useSelector((state) => state.user);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -74,22 +74,35 @@ function Header() {
                   About
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/sign-in"
-                  className="block py-2 px-4 text-gray-800 dark:text-white  rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-600 lg:ml-4"
-                >
-                  Login
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/sign-up"
-                  className="block py-2 px-4 hover:text-black hover:bg-gray-50 text-white bg-primary-700 rounded-lg hover:bg-primary-800 dark:bg-primary-600 dark:hover:bg-primary-700 lg:ml-2"
-                >
-                  Signup
-                </Link>
-              </li>
+              {currentUser ? (
+                <li>
+                  <Link
+                    to="/profile"
+                    className="block py-2 px-4 text-gray-800 dark:text-white  rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-600 lg:ml-4"
+                  >
+                    Profile
+                  </Link>
+                </li>
+              ) : (
+                <>
+                  <li>
+                    <Link
+                      to="/sign-in"
+                      className="block py-2 px-4 text-gray-800 dark:text-white  rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-600 lg:ml-4"
+                    >
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/sign-up"
+                      className="block py-2 px-4 hover:text-black hover:bg-gray-50 text-white bg-primary-700 rounded-lg hover:bg-primary-800 dark:bg-primary-600 dark:hover:bg-primary-700 lg:ml-2"
+                    >
+                      Signup
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>
