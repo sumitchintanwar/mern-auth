@@ -12,10 +12,10 @@ function SignIn() {
   // const [error, setError] = useState(false);
   // const [loading, setLoading] = useState(false);   not needed as redux is used
 
-  const { error, loading } = useSelector((state) => state.userReducer);
+  const { loading, error } = useSelector((state) => state.userReducer);
 
-  console.log("Redux error:", error);
-  console.log("Redux loading:", loading);
+  // console.log("Redux error:", error);
+  // console.log("Redux loading:", loading);
 
   // const { error, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
