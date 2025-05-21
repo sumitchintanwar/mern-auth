@@ -7,6 +7,7 @@ import {
   signOut,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
+import OAuth from "../components/Oauth";
 function SignUp() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
@@ -131,6 +132,8 @@ function SignUp() {
               >
                 {loading ? "Loading..." : "Create an account"}
               </button>
+              <OAuth />
+
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <Link

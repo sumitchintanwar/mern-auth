@@ -67,3 +67,55 @@ export const signinController = async (req, res, next) => {
 //   email: validUser.email,
 //   token,
 // });
+export const googleController = async (req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
+      const { password: hashedPassword, ...userWithoutPassword } = user._doc;
+
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
+        })
+        .status(200)
+        .json({
+          success: true,
+          user: userWithoutPassword,
+        });
+    } else {
+      // const generatedPassword = Math.random().toString(36).slice(-8);
+      // const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
+      const newUser = new User({
+        username:
+          req.body.name.split(" ").join("").toLowerCase() +
+          Math.floor(Math.random() * 10000).toString(),
+        email: req.body.email,
+        password: req.body.uid,
+        photo: req.body.photo,
+      });
+      await newUser.save();
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d",
+      });
+      const { password: hashedPassword, ...userWithoutPassword } = newUser._doc;
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
+        })
+        .status(200)
+        .json({
+          success: true,
+          user: userWithoutPassword,
+        });
+    }
+  } catch (err) {
+    next(err);
+  }
+};

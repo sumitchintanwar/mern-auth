@@ -7,6 +7,7 @@ import {
   signinSuccess,
   signinFailure,
 } from "../redux/user/userSlice";
+import OAuth from "../components/Oauth";
 function SignIn() {
   const [formData, setFormData] = useState({});
   // const [error, setError] = useState(false);
@@ -89,7 +90,7 @@ function SignIn() {
             </h1>
             <form
               onSubmit={handleSubmit}
-              className="space-y-4 md:space-y-6"
+              className="space-y-4 md:space-y-6 mb-0"
               action="#"
             >
               <div>
@@ -157,10 +158,11 @@ function SignIn() {
               <button
                 disabled={loading}
                 type="submit"
-                className="hover:bg-gray-50 hover:text-black w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                className=" hover:bg-gray-50 hover:text-black w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
                 {loading ? "Signing in..." : "Sign in"}
               </button>
+              <OAuth />
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Want to Sign Up?{" "}
                 <Link

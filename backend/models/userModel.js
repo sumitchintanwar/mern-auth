@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    photo: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/dqj0xgk8v/image/upload/v1698230982/blank-profile-picture-973460_640_1_ue3z4h.png",
+    },
   },
   {
     timestamps: true,
