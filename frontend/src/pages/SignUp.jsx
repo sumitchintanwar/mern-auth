@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function SignUp() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -25,10 +25,11 @@ function SignUp() {
       });
       const data = await res.json();
       setLoading(false);
-      if (!success) {
+      if (data.success === false) {
         setError(true);
         return;
       }
+      navigate("/sign-in");
     } catch (error) {
       setLoading(false);
       setError(error);
@@ -40,17 +41,17 @@ function SignUp() {
   return (
     <section className=" bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <Link
+        {/* <Link
           to="/"
           className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
         >
-          {/* <img
+          <img
             className="w-8 h-8 mr/-2"
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
             alt="logo"
           />
-          Flowbite */}
-        </Link>
+          Auth App
+        </Link> */}
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -75,7 +76,7 @@ function SignUp() {
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Username"
-                  required=""
+                  required
                 />
               </div>
               <div>
@@ -92,7 +93,7 @@ function SignUp() {
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
-                  required=""
+                  required
                 />
               </div>
               <div>
@@ -109,7 +110,7 @@ function SignUp() {
                   placeholder="••••••••"
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required=""
+                  required
                 />
               </div>
               <button
@@ -122,7 +123,7 @@ function SignUp() {
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <Link
-                  to="/login"
+                  to="/sign-in"
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Login here
@@ -131,7 +132,6 @@ function SignUp() {
             </form>
           </div>
           <p className="text-red-600 pl-8 mt-0 pb-8 font-light ">
-            
             {error && "Something Went Wrong"}
           </p>
         </div>
