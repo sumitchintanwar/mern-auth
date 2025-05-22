@@ -13,7 +13,7 @@ function About() {
             👤 About Me
           </h3>
           <p className="text-gray-700 text-base md:text-lg leading-relaxed">
-            Hi, I'm [Your Name], a passionate developer who loves creating
+            Hi, I'm Sumit, a passionate developer who loves creating
             clean, efficient, and interactive web applications. I enjoy working
             with modern technologies like React, Node.js, MongoDB, and exploring
             new tools in the development ecosystem. This project is one of my
