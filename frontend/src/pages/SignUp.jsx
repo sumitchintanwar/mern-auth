@@ -7,7 +7,7 @@ import {
   signOut,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
-import OAuth from "../components/Oauth";
+import OAuth from "../components/OAuth";
 function SignUp() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
