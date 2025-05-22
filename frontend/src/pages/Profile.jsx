@@ -4,8 +4,13 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
 } from "../redux/user/userSlice.js";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { data } from "react-router-dom";
 // import { useRef } from "react";
 // import { app } from "../firebase";
 // import {
@@ -17,6 +22,7 @@ import { useDispatch } from "react-redux";
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);
   console.log(currentUser);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   // const [image, setImage] = useState(undefined);
   // const [percent, setPercent] = useState(0);
@@ -54,6 +60,12 @@ export default function Profile() {
   //     }
   //   );
   // };
+  useEffect(() => {
+    if (Object.keys(formData).length > 0 && error) {
+      dispatch(updateUserFailure(false)); // Reset the error
+    }
+  }, [formData]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -62,13 +74,16 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `/api/user/update/${currentUser._id || currentUser.user._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await res.json();
       if (data.success === false) {
         dispatch(updateUserFailure(data));
@@ -78,6 +93,24 @@ export default function Profile() {
       setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error));
+    }
+  };
+  const handleDeleteAccount = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data));
+        return;
+      }
+      navigate("/sign-in");
+      dispatch(deleteUserSuccess(data));
+    } catch (error) {
+      dispatch(deleteUserFailure(error));
     }
   };
   return (
@@ -98,6 +131,7 @@ export default function Profile() {
               <img
                 src={
                   currentUser.photo ||
+                  currentUser.user.photo ||
                   "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                 }
                 alt="Profile"
@@ -118,7 +152,9 @@ export default function Profile() {
                   type="text"
                   name="username"
                   id="username"
-                  defaultValue={currentUser.username}
+                  defaultValue={
+                    currentUser.username || currentUser.user.username
+                  }
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Username"
@@ -134,7 +170,7 @@ export default function Profile() {
                 </label>
                 <input
                   // defaultValue={currentUser?.email}
-                  defaultValue={currentUser.email}
+                  defaultValue={currentUser.email || currentUser.user.email}
                   type="email"
                   name="email"
                   id="email"
@@ -171,10 +207,16 @@ export default function Profile() {
             </form>
           </h1>
           <div className="flex justify-between">
-            <span className="text-red-600 " type="submit">
+            <span
+              onClick={handleDeleteAccount}
+              className=" cursor-pointer text-red-600 "
+              type="submit"
+            >
               Delete Account
             </span>
-            <span className="text-red-600 text-center">Logout</span>
+            <span className="cursor-pointer  text-red-600 text-center">
+              Logout
+            </span>
           </div>
           <p className="text-red-700 mt-5">
             {error && "Something went wrong!"}
