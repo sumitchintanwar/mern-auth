@@ -1,5 +1,11 @@
 import React, { use, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from "../redux/user/userSlice.js";
+import { useDispatch } from "react-redux";
 // import { useRef } from "react";
 // import { app } from "../firebase";
 // import {
@@ -9,49 +15,77 @@ import { useSelector } from "react-redux";
 //   uploadBytesResumable,
 // } from "firebase/storage";
 export default function Profile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+  console.log(currentUser);
+  const dispatch = useDispatch();
   // const [image, setImage] = useState(undefined);
   // const [percent, setPercent] = useState(0);
   // const [imageError, setImageError] = useState(false);
-  // const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   // const fileRef = useRef(null);
 
   // // console.log("Current User:", currentUser);
   // // console.log("Photo URL:", currentUser.user.photo);
-  // const handleUpload = async (file) => {
+  // useEffect(() => {
+  //   if (image) {
+  //     handleFileUpload(image);
+  //   }
+  // }, [image]);
+  // const handleFileUpload = async (image) => {
   //   const storage = getStorage(app);
-  //   const fileName = new Date().getTime() + file.name;
+  //   const fileName = new Date().getTime() + image.name;
   //   const storageRef = ref(storage, fileName);
-  //   const uploadTask = uploadBytesResumable(storageRef, file);
+  //   const uploadTask = uploadBytesResumable(storageRef, image);
   //   uploadTask.on(
   //     "state_changed",
   //     (snapshot) => {
   //       const progress =
   //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  //       setPercent(Math.round(progress));
-  //       console.log("Upload is" + progress + "% done");
+  //       setImagePercent(Math.round(progress));
   //     },
-  //     (e) => {
+  //     (error) => {
   //       setImageError(true);
   //     },
   //     () => {
-  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-  //         setFormData({ ...formData, photo: downloadURL });
-  //       });
+  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
+  //         setFormData({ ...formData, profilePicture: downloadURL })
+  //       );
   //     }
   //   );
   // };
-  // useEffect(() => {
-  //   if (image) {
-  //     handleUpload(image);
-  //   }
-  // }, [image]);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(updateUserFailure(data));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error));
+    }
+  };
   return (
     <div className="mt-0  flex flex-col items-center justify-center min-h-screen">
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
           <h1 className="text-3xl font-bold text-center mt-4 my-7">
-            <form className="flex flex-col" action="">
+            <form onSubmit={handleSubmit} className="flex flex-col" action="">
               {/* <input
                 type="file"
                 ref={fileRef}
@@ -63,7 +97,7 @@ export default function Profile() {
               /> */}
               <img
                 src={
-                  currentUser.user.photo ||
+                  currentUser.photo ||
                   "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                 }
                 alt="Profile"
@@ -84,8 +118,8 @@ export default function Profile() {
                   type="text"
                   name="username"
                   id="username"
-                  defaultValue={currentUser.user.username}
-                  // onChange={handleChange}
+                  defaultValue={currentUser.username}
+                  onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Username"
                   required
@@ -100,11 +134,11 @@ export default function Profile() {
                 </label>
                 <input
                   // defaultValue={currentUser?.email}
-                  defaultValue={currentUser.user.email}
+                  defaultValue={currentUser.email}
                   type="email"
                   name="email"
                   id="email"
-                  // onChange={handleChange}
+                  onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
                   required
@@ -124,27 +158,30 @@ export default function Profile() {
                   name="password"
                   id="password"
                   placeholder="••••••••"
-                  // onChange={handleChange}
+                  onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
                 />
               </div>
               <button
                 type="submit"
                 className="mt-7 w-full hover:bg-gray-50 hover:text-black text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 cursor-pointer"
               >
-                Update account
+                {loading ? "Loading..." : "Update"}
               </button>
             </form>
           </h1>
           <div className="flex justify-between">
             <span className="text-red-600 " type="submit">
-              <button>Delete Account</button>
+              Delete Account
             </span>
-            <span>
-              <button className="text-red-600  text-center ">Logout</button>
-            </span>
+            <span className="text-red-600 text-center">Logout</span>
           </div>
+          <p className="text-red-700 mt-5">
+            {error && "Something went wrong!"}
+          </p>
+          <p className="text-green-700 mt-5">
+            {updateSuccess && "User is updated successfully!"}
+          </p>
         </div>
       </div>
     </div>
