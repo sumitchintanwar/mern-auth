@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // or 'next/link' if using Next.js
 import { useDispatch, useSelector } from "react-redux";
-import Oauth from "../components/Oauth.jsx";
+import Oauth from "../components/Oauth";
 import {
   signinStart,
   signOut,
