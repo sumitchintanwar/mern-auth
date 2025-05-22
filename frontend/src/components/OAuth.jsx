@@ -12,11 +12,13 @@ function Oauth() {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
-      const res = await fetch("/api/auth/google", {
+      const backendURL = import.meta.env.VITE_API_BASE_URL;
+      const res = await fetch(`${backendURL}/api/auth/google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           name: result.user.displayName,
           email: result.user.email,

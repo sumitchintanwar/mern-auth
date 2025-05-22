@@ -75,8 +75,11 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
+      const backendURL = import.meta.env.VITE_API_BASE_URL;
       const res = await fetch(
-        `/api/user/update/${currentUser._id || currentUser.user._id}`,
+        `${backendURL}/api/user/update/${
+          currentUser._id || currentUser.user._id
+        }`,
         {
           method: "POST",
           headers: {
@@ -99,9 +102,16 @@ export default function Profile() {
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: "DELETE",
-      });
+      const backendURL = import.meta.env.VITE_API_BASE_URL;
+
+      const res = await fetch(
+        `${backendURL}/api/user/delete/${
+          currentUser._id || currentUser.user._id
+        }`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
       console.log(data);
       if (data.success === false) {
@@ -116,7 +126,9 @@ export default function Profile() {
   };
   const handleSignOut = async () => {
     try {
-      await fetch("/api/auth/signout");
+      const backendURL = import.meta.env.VITE_API_BASE_URL;
+
+      await fetch(`${backendURL}/api/auth/signout`);
       dispatch(signOut());
       navigate("/sign-in");
     } catch (error) {

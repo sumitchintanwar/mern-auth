@@ -37,7 +37,9 @@ function SignIn() {
       // setLoading(true);
       // setError(false);
       dispatch(signinStart());
-      const res = await fetch("/api/auth/signin", {
+      const backendURL = import.meta.env.VITE_API_BASE_URL;
+
+      const res = await fetch(`${backendURL}/api/auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
