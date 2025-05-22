@@ -11,6 +11,8 @@ import {
 
 function SignIn() {
   const [formData, setFormData] = useState({});
+  const [rememberMe, setRememberMe] = useState(false);
+
   // const [error, setError] = useState(false);
   // const [loading, setLoading] = useState(false);   not needed as redux is used
 
@@ -26,7 +28,9 @@ function SignIn() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
   // console.log(formData);
-
+  const handleCheckbox = (e) => {
+    setRememberMe(e.target.checked);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -95,44 +99,45 @@ function SignIn() {
               action="#"
             >
               <div>
-                <label
+                {/* <label
                   htmlFor="email"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Your email
-                </label>
+                </label> */}
                 <input
                   onChange={handleChange}
                   type="email"
                   name="email"
                   id="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
+                  placeholder="Enter Your Email"
                   required
                 />
               </div>
               <div>
-                <label
+                {/* <label
                   htmlFor="password"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Password
-                </label>
+                </label> */}
                 <input
                   onChange={handleChange}
                   type="password"
                   name="password"
                   id="password"
-                  placeholder="••••••••"
+                  placeholder="Enter your Password"
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
                 />
               </div>
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <div className="flex items-start">
                   <div className="flex items-center h-5">
                     <input
-                      onChange={handleChange}
+                      onChange={handleCheckbox}
+                      checked={rememberMe}
                       id="remember"
                       aria-describedby="remember"
                       type="checkbox"
@@ -155,7 +160,7 @@ function SignIn() {
                 >
                   Forgot password?
                 </Link>
-              </div>
+              </div> */}
               <button
                 disabled={loading}
                 type="submit"
