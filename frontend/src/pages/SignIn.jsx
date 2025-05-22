@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // or 'next/link' if using Next.js
 import { useDispatch, useSelector } from "react-redux";
+import Oauth from "../components/Oauth.jsx";
 import {
   signinStart,
   signOut,
   signinSuccess,
   signinFailure,
 } from "../redux/user/userSlice";
-import OAuth from "../components/OAuth.jsx";
+
 function SignIn() {
   const [formData, setFormData] = useState({});
   // const [error, setError] = useState(false);
@@ -162,7 +163,7 @@ function SignIn() {
               >
                 {loading ? "Signing in..." : "Sign in"}
               </button>
-              <OAuth />
+              <Oauth />
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Want to Sign Up?{" "}
                 <Link

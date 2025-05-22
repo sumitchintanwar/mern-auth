@@ -7,6 +7,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signOut,
 } from "../redux/user/userSlice.js";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -113,6 +114,15 @@ export default function Profile() {
       dispatch(deleteUserFailure(error));
     }
   };
+  const handleSignOut = async () => {
+    try {
+      await fetch("/api/auth/signout");
+      dispatch(signOut());
+      navigate("/sign-in");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="mt-0  flex flex-col items-center justify-center min-h-screen">
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -214,7 +224,10 @@ export default function Profile() {
             >
               Delete Account
             </span>
-            <span className="cursor-pointer  text-red-600 text-center">
+            <span
+              onClick={handleSignOut}
+              className="cursor-pointer  text-red-600 text-center"
+            >
               Logout
             </span>
           </div>

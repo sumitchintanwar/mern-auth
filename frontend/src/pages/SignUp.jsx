@@ -52,7 +52,7 @@ function SignUp() {
       }
       if (data.success === true) {
         // setError(false);
-        navigate("/");
+        navigate("/sign-in");
       }
       dispatch(signinSuccess(data.user));
     } catch (error) {

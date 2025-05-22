@@ -4,7 +4,7 @@ import { app } from "../firebase";
 import { useDispatch } from "react-redux";
 import { signinSuccess } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
-function OAuth() {
+function Oauth() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleGoogleSignIn = async () => {
@@ -46,4 +46,4 @@ function OAuth() {
   );
 }
 
-export default OAuth;
+export default Oauth;
