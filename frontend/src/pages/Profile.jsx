@@ -1,5 +1,5 @@
-import React, { use, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   updateUserStart,
   updateUserSuccess,
@@ -8,62 +8,21 @@ import {
   deleteUserSuccess,
   deleteUserFailure,
   signOut,
-} from "../redux/user/userSlice.js";
-import { useDispatch } from "react-redux";
+} from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
-import { data } from "react-router-dom";
-// import { useRef } from "react";
-// import { app } from "../firebase";
-// import {
-//   getDownloadURL,
-//   getStorage,
-//   ref,
-//   uploadBytesResumable,
-// } from "firebase/storage";
+
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);
-  console.log(currentUser);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const [image, setImage] = useState(undefined);
-  // const [percent, setPercent] = useState(0);
-  // const [imageError, setImageError] = useState(false);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
-  // const fileRef = useRef(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  // // console.log("Current User:", currentUser);
-  // // console.log("Photo URL:", currentUser.user.photo);
-  // useEffect(() => {
-  //   if (image) {
-  //     handleFileUpload(image);
-  //   }
-  // }, [image]);
-  // const handleFileUpload = async (image) => {
-  //   const storage = getStorage(app);
-  //   const fileName = new Date().getTime() + image.name;
-  //   const storageRef = ref(storage, fileName);
-  //   const uploadTask = uploadBytesResumable(storageRef, image);
-  //   uploadTask.on(
-  //     "state_changed",
-  //     (snapshot) => {
-  //       const progress =
-  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  //       setImagePercent(Math.round(progress));
-  //     },
-  //     (error) => {
-  //       setImageError(true);
-  //     },
-  //     () => {
-  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
-  //         setFormData({ ...formData, profilePicture: downloadURL })
-  //       );
-  //     }
-  //   );
-  // };
   useEffect(() => {
     if (Object.keys(formData).length > 0 && error) {
-      dispatch(updateUserFailure(false)); // Reset the error
+      dispatch(updateUserFailure(null));
     }
   }, [formData]);
 
@@ -75,182 +34,196 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const backendURL = import.meta.env.VITE_API_BASE_URL;
+
       const res = await fetch(
-        `${backendURL}/api/user/update/${
-          currentUser._id || currentUser.user._id
-        }`,
+        `/api/user/update/${currentUser._id || currentUser.user._id}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         }
       );
+
       const data = await res.json();
-      if (data.success === false) {
+
+      if (!res.ok || data.success === false) {
         dispatch(updateUserFailure(data));
         return;
       }
+
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
-    } catch (error) {
-      dispatch(updateUserFailure(error));
+    } catch (err) {
+      dispatch(updateUserFailure(err));
     }
   };
+
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
-      const backendURL = import.meta.env.VITE_API_BASE_URL;
 
       const res = await fetch(
-        `${backendURL}/api/user/delete/${
-          currentUser._id || currentUser.user._id
-        }`,
-        {
-          method: "DELETE",
-        }
+        `/api/user/delete/${currentUser._id || currentUser.user._id}`,
+        { method: "DELETE" }
       );
+
       const data = await res.json();
-      console.log(data);
-      if (data.success === false) {
+
+      if (!res.ok || data.success === false) {
         dispatch(deleteUserFailure(data));
         return;
       }
+
+      dispatch(deleteUserSuccess());
       navigate("/sign-in");
-      dispatch(deleteUserSuccess(data));
-    } catch (error) {
-      dispatch(deleteUserFailure(error));
+    } catch (err) {
+      dispatch(deleteUserFailure(err));
     }
   };
+
   const handleSignOut = async () => {
     try {
-      const backendURL = import.meta.env.VITE_API_BASE_URL;
-
-      await fetch(`${backendURL}/api/auth/signout`);
+      await fetch("/api/auth/signout");
       dispatch(signOut());
       navigate("/sign-in");
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   };
+
   return (
-    <div className="mt-0  flex flex-col items-center justify-center min-h-screen">
-      <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 className="text-3xl font-bold text-center mt-4 my-7">
-            <form onSubmit={handleSubmit} className="flex flex-col" action="">
-              {/* <input
-                type="file"
-                ref={fileRef}
-                hidden
-                accept="image/.*"
-                onChange={(e) => {
-                  e.target.files[0];
-                }}
-              /> */}
+    <>
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="w-full max-w-md rounded-lg bg-white shadow dark:bg-gray-800">
+          <div className="p-6 space-y-6">
+            <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
+              Profile
+            </h1>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               <img
                 src={
                   currentUser.photo ||
-                  currentUser.user.photo ||
+                  currentUser.user?.photo ||
                   "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                 }
                 alt="Profile"
-                referrerPolicy="no-referrer"
-                // src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                onClick={() => fileRef.current.click()}
-                className="h-24 w-24 self-center cursor-pointer rounded-full object-cover bg-amber-50"
+                className="mx-auto h-24 w-24 rounded-full object-cover"
               />
 
               <div>
-                <label
-                  htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Your username
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Username
                 </label>
                 <input
                   type="text"
-                  name="username"
                   id="username"
                   defaultValue={
-                    currentUser.username || currentUser.user.username
+                    currentUser.username || currentUser.user?.username
                   }
                   onChange={handleChange}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Username"
-                  required
+                  className="mt-1 w-full rounded-lg border p-2 dark:bg-gray-700 dark:text-white"
                 />
               </div>
+
               <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Your email
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Email
                 </label>
                 <input
-                  // defaultValue={currentUser?.email}
-                  defaultValue={currentUser.email || currentUser.user.email}
                   type="email"
-                  name="email"
                   id="email"
+                  defaultValue={currentUser.email || currentUser.user?.email}
                   onChange={handleChange}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
-                  required
+                  className="mt-1 w-full rounded-lg border p-2 dark:bg-gray-700 dark:text-white"
                 />
               </div>
+
               <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Password
                 </label>
                 <input
-                  // defaultValue={currentUser?.photo}
-                  // defaultValue={currentUser?._id}
                   type="password"
-                  name="password"
                   id="password"
                   placeholder="••••••••"
                   onChange={handleChange}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="mt-1 w-full rounded-lg border p-2 dark:bg-gray-700 dark:text-white"
                 />
               </div>
+
               <button
-                type="submit"
-                className="mt-7 w-full hover:bg-gray-50 hover:text-black text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 cursor-pointer"
+                disabled={loading}
+                className="w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
               >
-                {loading ? "Loading..." : "Update"}
+                {loading ? "Updating..." : "Update Profile"}
               </button>
             </form>
-          </h1>
-          <div className="flex justify-between">
-            <span
-              onClick={handleDeleteAccount}
-              className=" cursor-pointer text-red-600 "
-              type="submit"
-            >
-              Delete Account
-            </span>
-            <span
-              onClick={handleSignOut}
-              className="cursor-pointer  text-red-600 text-center"
-            >
-              Logout
-            </span>
+
+            <div className="flex justify-between text-sm">
+              <span
+                onClick={() => setShowDeleteDialog(true)}
+                className="cursor-pointer text-red-600 hover:underline"
+              >
+                Delete Account
+              </span>
+
+              <span
+                onClick={handleSignOut}
+                className="cursor-pointer text-red-600 hover:underline"
+              >
+                Logout
+              </span>
+            </div>
+
+            {error && (
+              <p className="text-center text-sm text-red-600">
+                {error.message || "Something went wrong"}
+              </p>
+            )}
+
+            {updateSuccess && (
+              <p className="text-center text-sm text-green-600">
+                Profile updated successfully
+              </p>
+            )}
           </div>
-          <p className="text-red-700 mt-5">
-            {error && "Something went wrong!"}
-          </p>
-          <p className="text-green-700 mt-5">
-            {updateSuccess && "User is updated successfully!"}
-          </p>
         </div>
       </div>
-    </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-96 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Delete Account
+            </h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              Are you sure you want to delete your account? This action cannot
+              be undone.
+            </p>
+
+            <div className="mt-6 flex justify-end gap-4">
+              <button
+                onClick={() => setShowDeleteDialog(false)}
+                className="rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  handleDeleteAccount();
+                }}
+                className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
